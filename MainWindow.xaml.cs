@@ -7,6 +7,7 @@ using System.IO;
 using System.Reflection;
 using System.Drawing;
 using System.Windows.Media.Imaging;
+using System.ComponentModel;
 
 namespace SerialPortAPP
 {
@@ -27,6 +28,7 @@ namespace SerialPortAPP
             // this.Icon = BitmapFrame.Create(iconUri);            
 
             InitializeComponent();
+            Closing += Window_OnClosing;
 
             this.UpdatePortName();
 
@@ -97,7 +99,7 @@ namespace SerialPortAPP
                     };
                 }
                 cb.IsEnabled = false;
-                this.UpdatePortName();                
+                this.UpdatePortName();
             }
         }
 
@@ -107,7 +109,7 @@ namespace SerialPortAPP
             List<string> portList = new List<string>();
             foreach (var port in portNames)
             {
-                if(isValidPortCOM(port)) portList.Add(port);
+                if (isValidPortCOM(port)) portList.Add(port);
             }
 
             if (cbCOM1.IsEnabled) cbCOM1.ItemsSource = portList.ToArray();
@@ -119,7 +121,7 @@ namespace SerialPortAPP
             try
             {
                 SerialPort portCOM = new SerialPort(portName);
-                portCOM.Open();                
+                portCOM.Open();
                 portCOM.Close();
                 return true;
             }
@@ -130,5 +132,12 @@ namespace SerialPortAPP
 
             return false;
         }
-}
+
+        public void Window_OnClosing(object sender, CancelEventArgs e)
+        {
+            portCOM1?.Dispose();
+            portCOM2?.Dispose();
+            Application.Current.Shutdown();            
+        }
+    }
 }
